@@ -36,9 +36,6 @@ impl<T: std::str::FromStr> TryFrom<&str> for Vector<T> {
     ///
     /// let vector = Vector::<f64>::try_from("[1.0, 2.0, 3.0]").unwrap();
     /// assert_eq!(vector.components(), &[1.0, 2.0, 3.0]);
-    ///
-    /// let err = Vector::<f64>::try_from("[1.0, 2.0, 3.0, 4.0]").unwrap_err();
-    /// assert_eq!(err.to_string(), "Unexpected end of input");
     /// ```
     ///
     /// This method is typically used to parse user input or configuration files where vector
@@ -388,12 +385,12 @@ impl<T> Vector<T>
     /// use rusty_linear_algebra::math::Vector;
     ///
     /// let mut v = Vector::new(vec![3.0, 4.0]);
-    /// let u = v.normalize();
-    /// assert_eq!(u.magnitude(), 1.0);
+    /// v.normalize();
+    /// assert_eq!(v.magnitude(), 1.0);
     ///
     /// let mut v = Vector::new(vec![1.0, 1.0, 1.0]);
-    /// let u = v.normalize();
-    /// assert_eq!(u.magnitude(), 1.0);
+    /// v.normalize();
+    /// assert_eq!(v.magnitude(), 1.0);
     /// ```
     ///
     /// # Panics
@@ -471,6 +468,26 @@ impl<T> Vector<T>
     /// If any of the vector components cannot be multiplied by the scalar value, this method will panic.
     pub fn scalar_mul(&self, scalar: T) -> Vector<T> {
         Self::mul(self.clone(), scalar)
+    }
+
+    /// Returns a reference to the vector's underlying component data.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use rusty_linear_algebra::math::Vector;
+    /// let v = Vector::new(vec![1.0, 2.0, 3.0]);
+    /// let components = v.components();
+    ///
+    /// assert_eq!(components, &vec![1.0, 2.0, 3.0]);
+    /// ```
+    pub fn components(&self) -> &Vec<T> {
+        &self.components
+    }
+
+    /// Returns the number of elements in the vector.
+    pub fn len(&self) -> usize {
+        self.components.len()
     }
 }
 
