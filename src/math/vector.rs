@@ -364,4 +364,13 @@ mod tests {
         let v2: Vector<_> = vector!(1.0, 2.0);
         let _ = v2 + v1;
     }
+
+    #[test]
+    fn test_vector_macro() {
+        let vec1 = vector![1.0, 2.0, 3.0];
+        let vec2 = vector!(1,2,3);
+
+        assert_eq!(vec1.components, vec![1.0, 2.0, 3.0]);
+        assert_eq!(vec2.components, vec![1.0, 2.0, 3.0]);
+    }
 }
