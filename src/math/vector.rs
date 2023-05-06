@@ -14,6 +14,51 @@ pub struct Vector<T> {
     components: Vec<T>,
 }
 
+
+impl<T> IntoIterator for Vector<T> {
+    type Item = T;
+    type IntoIter = VectorIterator<T>;
+
+    /// Returns an iterator that takes ownership of the vector and returns the
+    /// elements in sequence. This iterator will consume the vector, which means
+    /// that once the iterator has been created, the original vector can no longer
+    /// be accessed unless the iterator is consumed.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use rusty_linear_algebra::math::Vector;
+    ///
+    /// let v = Vector::new(vec![1.0, 2.0, 3.0]);
+    /// let mut iter = v.into_iter();
+    ///
+    /// assert_eq!(iter.next(), Some(1.0));
+    /// assert_eq!(iter.next(), Some(2.0));
+    /// assert_eq!(iter.next(), Some(3.0));
+    /// assert_eq!(iter.next(), None);
+    /// ```
+    fn into_iter(self) -> Self::IntoIter {
+        VectorIterator { vector: self }
+    }
+}
+
+pub struct VectorIterator<T> {
+    vector: Vector<T>,
+}
+
+impl<T> Iterator for VectorIterator<T> {
+    type Item = T;
+
+    /// Returns the next item in the vector iterator or `None` if the iterator is empty.
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.vector.components.is_empty() {
+            None
+        } else {
+            Some(self.vector.components.remove(0))
+        }
+    }
+}
+
 impl<T: std::str::FromStr> TryFrom<&str> for Vector<T> {
     type Error = &'static str;
 
@@ -541,5 +586,16 @@ mod tests {
 
         let result = Vector::<f64>::try_from("[1.0, 2.0, 3.0a]");
         assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_iterator() {
+        let v = vector![1.0, 2.0, 3.0];
+        let mut iter = v.into_iter();
+
+        assert_eq!(iter.next(), Some(1.0));
+        assert_eq!(iter.next(), Some(2.0));
+        assert_eq!(iter.next(), Some(3.0));
+        assert_eq!(iter.next(), None);
     }
 }
