@@ -489,6 +489,11 @@ impl<T> Vector<T>
     pub fn len(&self) -> usize {
         self.components.len()
     }
+
+    /// Returns true if the vectors components is empty, false otherwise.
+    pub fn is_empty(&self) -> bool {
+        self.components.is_empty()
+    }
 }
 
 #[cfg(test)]
