@@ -3,6 +3,9 @@ use std::fmt::{Display, Formatter};
 use std::ops::{Index, Mul};
 use num_traits::{Float, Num, NumOps};
 
+type Point3D<T> = (T, T, T);
+type Point2D<T> = (T, T);
+
 macro_rules! vector {
     ($($x:expr),*) => {
         Vector::new(vec![$($x as f64),*])
@@ -13,7 +16,6 @@ macro_rules! vector {
 pub struct Vector<T> {
     components: Vec<T>,
 }
-
 
 impl<T> IntoIterator for Vector<T> {
     type Item = T;
@@ -538,6 +540,34 @@ impl<T> Vector<T>
     /// Returns true if the vectors components is empty, false otherwise.
     pub fn is_empty(&self) -> bool {
         self.components.is_empty()
+    }
+
+    /// Creates a Vector<T> from two points in n-dimensional space.
+    ///
+    /// # Arguments
+    ///
+    /// * `start` - A point in n-dimensional space as an array of type T representing the starting coordinates.
+    /// * `end` - A point in n-dimensional space as an array of type T representing the ending coordinates.
+    ///
+    /// # Panics
+    ///
+    /// This method will panic if the two input arrays do not have the same length.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use rusty_linear_algebra::math::Vector;
+    ///
+    /// let start = (0.0, 0.0, 0.0);
+    /// let end = (2.0, 4.0, 5.0);
+    /// let vec = Vector::from_points(start, end);
+    ///
+    /// assert_eq!(vec.components(), &[2.0, 4.0, 5.0]);
+    /// ```
+    pub fn from_points(start: Point3D<T>, end: Point3D<T>) -> Vector<T> {
+        Vector {
+            components: vec![end.0 - start.0, end.1 - start.1, end.2 - start.2],
+        }
     }
 }
 
