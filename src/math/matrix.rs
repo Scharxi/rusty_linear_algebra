@@ -6,6 +6,29 @@ pub type Matrix3<T> = Matrix<T, 3, 3>;
 pub type Matrix4<T> = Matrix<T, 4, 4>;
 
 #[derive(Debug, Clone)]
+/// A generic matrix struct with a fixed number of rows and columns.
+///
+/// The `Matrix` struct is generic over its element type `T` and its size, which is specified by
+/// the type-level constants `ROWS` and `COL`. It provides methods for creating and manipulating
+/// matrices, as well as implementing the `Index`, `IndexMut`, and `IntoIterator` traits to allow
+/// for indexing and iteration over the matrix's elements.
+///
+/// # Examples
+///
+/// Create a new 3x3 matrix with all elements set to 0.0:
+///
+/// ```
+/// # use rusty_linear_algebra::math::Matrix;
+/// let matrix = Matrix::<f32, 3,3>::new(0.0);
+/// ```
+///
+/// Access an element in the matrix using indexing:
+///
+/// ```
+/// # use rusty_linear_algebra::math::Matrix;
+/// let matrix = Matrix::<f32, 3,3>::new(0.0);
+/// let elem = matrix[1][2];
+/// ```
 pub struct Matrix<T, const ROWS: usize, const COL: usize> {
     pub rows: [[T; COL]; ROWS],
 }
