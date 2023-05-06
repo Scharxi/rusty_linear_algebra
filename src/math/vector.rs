@@ -14,6 +14,23 @@ pub struct Vector<T> {
     components: Vec<T>,
 }
 
+impl<T: std::str::FromStr> TryFrom<String> for Vector<T> {
+    type Error = &'static str;
+
+    fn try_from(s: String) -> Result<Self, Self::Error> {
+        let components_str = s
+            .trim_matches(|c| c == '[' || c == ']')
+            .split(',')
+            .map(str::trim);
+
+        let components: Result<Vec<T>, _> = components_str.map(str::parse).collect();
+        match components {
+            Ok(components) => Ok(Self { components }),
+            Err(_) => Err("could not parse component"),
+        }
+    }
+}
+
 impl<T: PartialEq> PartialEq for Vector<T> {
     /// Compares this vector to another for equality. Two vectors are considered equal if they have
     /// the same dimension and their corresponding components are equal. Returns `true` if the
@@ -372,5 +389,14 @@ mod tests {
 
         assert_eq!(vec1.components, vec![1.0, 2.0, 3.0]);
         assert_eq!(vec2.components, vec![1.0, 2.0, 3.0]);
+    }
+
+    #[test]
+    fn test_try_from_string() {
+        let v1 = Vector::try_from(String::from("[1.0,2.0,3.0]")).unwrap();
+        let v2 = Vector::try_from(String::from("[1.0, 2.0, 3.0]")).unwrap();
+        let v3 = Vector::<f64>::try_from(String::from("[1.0,2.0,3.0,4.0]"));
+        assert_eq!(v1, Vector::new(vec![1.0, 2.0, 3.0]));
+        assert_eq!(v1, v2);
     }
 }
