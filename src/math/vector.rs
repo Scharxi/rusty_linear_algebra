@@ -17,6 +17,24 @@ pub struct Vector<T> {
 impl<T: std::str::FromStr> TryFrom<String> for Vector<T> {
     type Error = &'static str;
 
+    /// Attempts to create a new `Vector<T>` instance from a string slice. The string should
+    /// contain a comma-separated list of numeric values enclosed in square brackets, such as
+    /// "[1.0, 2.0, 3.0]". This function returns an error if any of the values in the string
+    /// are not numeric or if the string does not have the correct format.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use std::convert::TryFrom;
+    /// use rusty_linear_algebra::math::Vector;
+    ///
+    /// let v = Vector::<f64>::try_from("[1.0, 2.0, 3.0]".to_string()).unwrap();
+    /// assert_eq!(v.len(), 3);
+    /// assert_eq!(v[0], 1.0);
+    ///
+    /// let result = Vector::<f64>::try_from("[1.0, 2.0, foo]".to_string());
+    /// assert!(result.is_err());
+    /// ```
     fn try_from(s: String) -> Result<Self, Self::Error> {
         let components_str = s
             .trim_matches(|c| c == '[' || c == ']')
