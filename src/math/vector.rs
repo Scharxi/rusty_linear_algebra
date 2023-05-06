@@ -14,6 +14,47 @@ pub struct Vector<T> {
     components: Vec<T>,
 }
 
+impl<T: std::str::FromStr> TryFrom<&str> for Vector<T> {
+    type Error = &'static str;
+
+    /// Attempts to create a new `Vector<T>` from a string slice.
+    ///
+    /// The string slice should contain a comma-separated list of values enclosed in square brackets,
+    /// representing the components of the vector. For example, the string "[1.0, 2.0, 3.0]" would create
+    /// a new `Vector<f64>` with three components.
+    ///
+    /// # Errors
+    ///
+    /// Returns a `ParseError` if the string slice is not in the correct format or if any of the values
+    /// cannot be parsed as type `T`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use std::convert::TryFrom;
+    /// use rusty_linear_algebra::math::Vector;
+    ///
+    /// let vector = Vector::<f64>::try_from("[1.0, 2.0, 3.0]").unwrap();
+    /// assert_eq!(vector.components(), &[1.0, 2.0, 3.0]);
+    ///
+    /// let err = Vector::<f64>::try_from("[1.0, 2.0, 3.0, 4.0]").unwrap_err();
+    /// assert_eq!(err.to_string(), "Unexpected end of input");
+    /// ```
+    ///
+    /// This method is typically used to parse user input or configuration files where vector
+    /// components are specified as strings.
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        let components = value
+            .trim_matches(|p| p == '[' || p == ']')
+            .split(',')
+            .map(|s| s.trim().parse::<T>())
+            .collect::<Result<Vec<T>, _>>()
+            .map_err(|_| "Could not create Vector from string slice.")?;
+
+        Ok(Vector { components })
+    }
+}
+
 impl<T: std::str::FromStr> TryFrom<String> for Vector<T> {
     type Error = &'static str;
 
@@ -416,5 +457,14 @@ mod tests {
         let v3 = Vector::<f64>::try_from(String::from("[1.0,2.0,3.0,4.0]"));
         assert_eq!(v1, Vector::new(vec![1.0, 2.0, 3.0]));
         assert_eq!(v1, v2);
+    }
+
+    #[test]
+    fn test_try_from_str_slice() {
+        let result = Vector::<f64>::try_from("[1.0, 2.0, 3.0]");
+        assert_eq!(result, Ok(Vector::new(vec![1.0, 2.0, 3.0])));
+
+        let result = Vector::<f64>::try_from("[1.0, 2.0, 3.0a]");
+        assert!(result.is_err());
     }
 }
