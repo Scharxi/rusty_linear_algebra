@@ -1,6 +1,6 @@
 use std::cmp::Ordering;
 use std::fmt::{Display, Formatter};
-use std::ops::Index;
+use std::ops::{Index, Mul};
 use num_traits::{Float, Num, NumOps};
 
 macro_rules! vector {
@@ -283,6 +283,36 @@ impl<T> std::ops::Mul<Vector<T>> for Vector<T> where T: std::ops::Mul<Output=T> 
     }
 }
 
+impl<T: std::ops::Mul<Output=T> + Clone> std::ops::Mul<T> for Vector<T> {
+    type Output = Self;
+    /// Multiplies each component of the vector by a scalar value and returns a new vector.
+    ///
+    /// # Arguments
+    ///
+    /// * `scalar`: A scalar value of type T, which will be used to multiply each component of the vector.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use rusty_linear_algebra::math::Vector;
+    ///
+    /// let vector = Vector::new(vec![1.0, 2.0, 3.0]);
+    /// let scaled_vector = vector * 2.0;
+    /// assert_eq!(scaled_vector, Vector::new(vec![2.0, 4.0, 6.0]));
+    /// ```
+    ///
+    /// # Panics
+    ///
+    /// If any of the vector components cannot be multiplied by the scalar value, this method will panic.
+    fn mul(self, other: T) -> Self::Output {
+        let mut new_components = Vec::with_capacity(self.components.len());
+        for comp in self.components.iter() {
+            new_components.push(comp.clone() * other.clone());
+        }
+        Self { components: new_components }
+    }
+}
+
 impl<T> Vector<T>
     where T:
     std::ops::Mul<Output=T> +
@@ -418,6 +448,29 @@ impl<T> Vector<T>
     /// ```
     pub fn from_vec(vec: &Vec<T>) -> Vector<T> {
         Vector::new(vec.clone())
+    }
+
+    /// Multiplies each component of the vector by a scalar value and returns a new vector.
+    ///
+    /// # Arguments
+    ///
+    /// * `scalar`: A scalar value of type T, which will be used to multiply each component of the vector.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use rusty_linear_algebra::math::Vector;
+    ///
+    /// let vector = Vector::new(vec![1.0, 2.0, 3.0]);
+    /// let scaled_vector = vector.scalar_mul(2.0);
+    /// assert_eq!(scaled_vector, Vector::new(vec![2.0, 4.0, 6.0]));
+    /// ```
+    ///
+    /// # Panics
+    ///
+    /// If any of the vector components cannot be multiplied by the scalar value, this method will panic.
+    pub fn scalar_mul(&self, scalar: T) -> Vector<T> {
+        Self::mul(self.clone(), scalar)
     }
 }
 
