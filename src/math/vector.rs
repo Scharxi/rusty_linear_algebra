@@ -569,6 +569,26 @@ impl<T> Vector<T>
             components: vec![end.0 - start.0, end.1 - start.1, end.2 - start.2],
         }
     }
+
+    /// Sets all components of the vector to the given value.
+    ///
+    /// # Arguments
+    ///
+    /// * `value`: A value of type `T` to set all components to.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use rusty_linear_algebra::math::Vector;
+    /// let mut v = Vector::from_slice(&[1.0, 2.0, 3.0]);
+    /// v.set(0.0);
+    /// assert_eq!(v, Vector::from_slice(&[0.0, 0.0, 0.0]));
+    /// ```
+    pub fn set(&mut self, value: T) {
+        for component in &mut self.components {
+            *component = value
+        }
+    }
 }
 
 #[cfg(test)]
