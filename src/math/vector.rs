@@ -613,6 +613,37 @@ impl<T> Vector<T>
     pub fn one_3d() -> Vector<f64> {
         vector!(1,1,1)
     }
+
+    /// Computes the cross product of the vector with another vector, returning a new `Vector<T>`
+    /// that is perpendicular to both input vectors. The input vector and the other vector must be
+    /// of the same dimensionality, and the dimensionality must be either 2 or 3.
+    ///
+    /// # Arguments
+    ///
+    /// * `other` - A reference to another `Vector<T>` with the same dimensionality as this one
+    ///
+    /// # Panics
+    ///
+    /// This method panics if the input vector and the other vector have different dimensionality,
+    /// or if the dimensionality is not 2 or 3.
+    pub fn cross_product(&self, other: &Self) -> Option<Self> {
+        if self.components.len() != 3 || other.components.len() != 3 {
+            return None;
+        }
+
+        let ax = self.components[0];
+        let ay = self.components[1];
+        let az = self.components[2];
+        let bx = other.components[0];
+        let by = other.components[1];
+        let bz = other.components[2];
+
+        Some(Self::new(vec![
+            ay * bz - az * by,
+            az * bx - ax * bz,
+            ax * by - ay * bx,
+        ]))
+    }
 }
 
 #[cfg(test)]
@@ -671,5 +702,14 @@ mod tests {
         assert_eq!(iter.next(), Some(2.0));
         assert_eq!(iter.next(), Some(3.0));
         assert_eq!(iter.next(), None);
+    }
+
+    #[test]
+    fn test_cross_product() {
+        let v1 = vector!(1.0, 2.0, 3.0);
+        let v2 = vector!(4.0, 5.0, 6.0);
+        let result = v1.cross_product(&v2);
+        assert!(result.is_some());
+        assert_eq!(result.unwrap(), vector!(-3.0, 6.0, -3.0));
     }
 }
