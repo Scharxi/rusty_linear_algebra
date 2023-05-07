@@ -602,6 +602,45 @@ impl<T> Vector<T>
         vector!(0,0,0)
     }
 
+    /// Checks if the vector is a zero vector, i.e. if all of its components are zero.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use rusty_linear_algebra::math::Vector;
+    ///
+    /// let zero_vector = Vector::from_slice(&[0.0, 0.0, 0.0]);
+    /// let non_zero_vector = Vector::from_slice(&[1.0, 1.0, 1.0]);
+    ///
+    /// assert!(zero_vector.is_zero());
+    /// assert!(!non_zero_vector.is_zero());
+    /// ```
+    pub fn is_zero(&self) -> bool {
+        self.components.iter().all(|&x| x == T::zero())
+    }
+
+    /// Checks if the vector is a unit vector, i.e., a vector with a magnitude of 1.
+    ///
+    /// # Returns
+    ///
+    /// * `true` if the magnitude of the vector is equal to 1.
+    /// * `false` otherwise.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use rusty_linear_algebra::math::Vector;
+    ///
+    /// let v1 = Vector::from_vec(&vec![0.6, 0.8]);
+    /// assert!(v1.is_unity_vector());
+    ///
+    /// let v2 = Vector::from_vec(&vec![1.0, 2.0]);
+    /// assert!(!v2.is_unity_vector());
+    /// ```
+    pub fn is_unity_vector(&self) -> bool {
+        self.magnitude().eq(&T::one())
+    }
+
     /// Creates a new 3d Vector<T> with all components initialized to one.
     /// # Examples
     ///
@@ -711,5 +750,23 @@ mod tests {
         let result = v1.cross_product(&v2);
         assert!(result.is_some());
         assert_eq!(result.unwrap(), vector!(-3.0, 6.0, -3.0));
+    }
+
+    #[test]
+    fn test_unity_vector() {
+        let v1 = Vector::from_slice(&[1.0, 0.0, 0.0]);
+        assert!(v1.is_unity_vector());
+
+        let v2 = Vector::from_slice(&[0.0, 1.0, 0.0]);
+        assert!(v2.is_unity_vector());
+
+        let v3 = Vector::from_slice(&[0.0, 0.0, 1.0]);
+        assert!(v3.is_unity_vector());
+
+        let v4 = Vector::from_slice(&[1.0, 1.0, 1.0]);
+        assert!(!v4.is_unity_vector());
+
+        let v5 = Vector::from_slice(&[0.0, 0.0, 0.0]);
+        assert!(!v5.is_unity_vector());
     }
 }
