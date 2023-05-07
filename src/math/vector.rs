@@ -1,7 +1,7 @@
 use std::cmp::Ordering;
 use std::fmt::{Display, Formatter};
 use std::ops::{Index, Mul};
-use num_traits::{Float, Num, NumOps};
+use num_traits::{Float};
 
 type Point3D<T> = (T, T, T);
 type Point2D<T> = (T, T);
@@ -184,7 +184,7 @@ impl<T: Display> Display for Vector<T> {
 
 impl<T> PartialOrd for Vector<T>
     where
-        T: Default + Copy + std::ops::Mul<Output=T> + PartialOrd + std::ops::Sub<Output=T> + std::ops::Add<Output=T> + std::ops::Div<Output=T> + std::ops::Neg<Output=T> + std::fmt::Debug + Float,
+        T: Default + Copy + Mul<Output=T> + PartialOrd + std::ops::Sub<Output=T> + std::ops::Add<Output=T> + std::ops::Div<Output=T> + std::ops::Neg<Output=T> + std::fmt::Debug + Float,
 {
     /// Compares the magnitude (length) of two vectors and returns an `Option` that
     /// represents their ordering relationship.
@@ -302,7 +302,7 @@ impl<T> std::ops::Sub<Vector<T>> for Vector<T> where T: std::ops::Sub<Output=T> 
     }
 }
 
-impl<T> std::ops::Mul<Vector<T>> for Vector<T> where T: std::ops::Mul<Output=T> + Copy {
+impl<T> Mul<Vector<T>> for Vector<T> where T: Mul<Output=T> + Copy {
     type Output = Vector<T>;
 
     /// Multiplies each component of this vector with the corresponding component of the given vector and returns a new vector with the resulting components.
@@ -359,7 +359,7 @@ impl<T: std::ops::Mul<Output=T> + Clone> std::ops::Mul<T> for Vector<T> {
 
 impl<T> Vector<T>
     where T:
-    std::ops::Mul<Output=T> +
+    Mul<Output=T> +
     std::ops::Add<Output=T> +
     std::ops::Div<Output=T> +
     Sized +
@@ -682,6 +682,27 @@ impl<T> Vector<T>
             az * bx - ax * bz,
             ax * by - ay * bx,
         ]))
+    }
+
+    /// Returns a new Vector<T> that is the unit vector of the current vector,
+    /// if the current vector is not a zero vector.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use rusty_linear_algebra::math::Vector;
+    ///
+    /// let v1 = Vector::from_vec(&vec![1.0, 2.0, 3.0]);
+    /// let u = v1.unit_vector();
+    /// assert!(u.is_unity_vector())
+    /// ```
+    pub fn unit_vector(&self) -> Vector<T> {
+        let magnitude = self.magnitude();
+        if magnitude.is_zero() {
+            return self.clone();
+        }
+        let scale = T::one() / magnitude;
+        self.scalar_mul(scale)
     }
 }
 
