@@ -589,6 +589,30 @@ impl<T> Vector<T>
             *component = value
         }
     }
+
+    /// Creates a new 3d Vector<T> with all components initialized to zero.
+    /// # Examples
+    ///
+    /// ```
+    /// # use rusty_linear_algebra::math::Vector;
+    /// let mut zero_vec = Vector::<f64>::zero_3d();
+    /// assert_eq!(zero_vec[0], 0.0)
+    /// ```
+    pub fn zero_3d() -> Vector<f64> {
+        vector!(0,0,0)
+    }
+
+    /// Creates a new 3d Vector<T> with all components initialized to one.
+    /// # Examples
+    ///
+    /// ```
+    /// # use rusty_linear_algebra::math::Vector;
+    /// let mut zero_vec = Vector::<f64>::one_3d();
+    /// assert_eq!(zero_vec[0], 1.0)
+    /// ```
+    pub fn one_3d() -> Vector<f64> {
+        vector!(1,1,1)
+    }
 }
 
 #[cfg(test)]
